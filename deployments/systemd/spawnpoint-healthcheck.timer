@@ -1,0 +1,9 @@
+[Unit]
+Description=Poll Spawnpoint /healthz every 2 minutes
+
+[Timer]
+OnBootSec=1m
+OnUnitActiveSec=2m
+
+[Install]
+WantedBy=timers.target

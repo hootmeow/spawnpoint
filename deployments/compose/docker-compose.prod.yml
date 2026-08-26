@@ -1,0 +1,108 @@
+# Production-shaped Compose stack: Postgres + one-shot migration runner +
+# api + worker, all built from the repo's root Dockerfile. Requires Docker
+# Compose v2 (the `docker compose` CLI, not the standalone `docker-compose`
+# v1). Copy compose.env.example to .env next to this file and fill it in,
+# then from this directory:
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Mount your BF1942/BFV server's log directory at BF1942_LOG_DIR so the
+# worker can watch it; the worker's own content-addressed archive and
+# seen-file cache persist in the worker-archive volume regardless.
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-spawnpoint}
+      POSTGRES_USER: ${POSTGRES_USER:-spawnpoint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-spawnpoint}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # Not published to the host by default — the api/worker containers reach
+    # it over the compose network. Uncomment to expose it for external tools.
+    # ports:
+    #   - "127.0.0.1:5432:5432"
+
+  migrate:
+    image: postgres:16
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-spawnpoint}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-spawnpoint}?sslmode=disable
+    volumes:
+      - ../../migrations:/migrations:ro
+      - ./migrate.sh:/migrate.sh:ro
+    entrypoint: ["/bin/sh", "/migrate.sh"]
+
+  api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: api
+      args:
+        VERSION: ${VERSION:-dev}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgres://${POSTGRES_USER:-spawnpoint}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-spawnpoint}?sslmode=disable
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
+      SERVER_NAME: ${SERVER_NAME:-BF1942 Server}
+      SERVER_ADDRESS: ${SERVER_ADDRESS:-127.0.0.1}
+      SERVER_PORT: ${SERVER_PORT:-14567}
+      PRIVACY_CONTACT: ${PRIVACY_CONTACT:-}
+      # Public URL of the site (e.g. https://stats.example.com) — enables link
+      # previews and absolute /sitemap.xml URLs. Leave empty until you have one.
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      # Persist the session-signing secret so admin sessions survive restarts.
+      SESSION_KEY_FILE: /data/session.key
+      # Set to 1 once TLS terminates in front of this service (reverse proxy)
+      # so the admin token/session cookie are never sent over cleartext.
+      SECURE_COOKIES: ${SECURE_COOKIES:-}
+    volumes:
+      - api-data:/data
+    # Published directly with no proxy in front by default. If you expose
+    # this to the internet, note the Docker userland-proxy caveat in
+    # docs/production.md#docker (spoofable client IPs over IPv6) — put a
+    # reverse proxy in front or publish IPv4-only.
+    ports:
+      - "${HTTP_PORT:-8080}:8080"
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: worker
+      args:
+        VERSION: ${VERSION:-dev}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-spawnpoint}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-spawnpoint}?sslmode=disable
+      SERVER_NAME: ${SERVER_NAME:-BF1942 Server}
+      SERVER_ADDRESS: ${SERVER_ADDRESS:-127.0.0.1}
+      SERVER_PORT: ${SERVER_PORT:-14567}
+      # Round-complete and server up/down notifications (unset disables them).
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    volumes:
+      - worker-archive:/data/raw-logs
+      - ${BF1942_LOG_DIR:-./logs}:/logs:ro
+
+volumes:
+  postgres-data:
+  worker-archive:
+  api-data:

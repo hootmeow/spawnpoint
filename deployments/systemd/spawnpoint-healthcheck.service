@@ -1,0 +1,12 @@
+[Unit]
+Description=Spawnpoint /healthz monitor (Discord alert on sustained failure)
+
+[Service]
+Type=oneshot
+# Adjust paths to your install; setup.sh installs use the repo checkout.
+WorkingDirectory=/opt/spawnpoint
+EnvironmentFile=/etc/spawnpoint/spawnpoint.env
+Environment=HEALTH_URL=http://127.0.0.1:8080/healthz
+Environment=STATE_FILE=/var/lib/spawnpoint/healthcheck-state
+Environment=HEALTHCHECK_FAIL_THRESHOLD=3
+ExecStart=/opt/spawnpoint/deployments/scripts/healthcheck-alert.sh

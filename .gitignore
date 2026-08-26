@@ -1,0 +1,11 @@
+.env
+.DS_Store
+bin/
+dist/
+coverage/
+*.log
+tmp/
+data/
+
+# stray local builds
+apps/api/api

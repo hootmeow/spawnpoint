@@ -1,0 +1,31 @@
+[Unit]
+Description=Spawnpoint XML Worker
+After=network.target postgresql.service bf1942.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/spawnpoint
+EnvironmentFile=/etc/spawnpoint/spawnpoint.env
+ExecStart=/opt/spawnpoint/bin/spawnpoint-worker -watch -interval 15s /srv/spawnpoint/drop/server-a
+Restart=on-failure
+RestartSec=5
+User=spawnpoint
+Group=spawnpoint
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/srv/spawnpoint/drop
+ReadWritePaths=/var/lib/spawnpoint
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+LimitNOFILE=65535
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

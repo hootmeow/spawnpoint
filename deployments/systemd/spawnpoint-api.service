@@ -1,0 +1,35 @@
+[Unit]
+Description=Spawnpoint API
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/spawnpoint
+EnvironmentFile=/etc/spawnpoint/spawnpoint.env
+# Persist the admin session-signing secret in the one writable path (see
+# ReadWritePaths below). ProtectSystem=strict makes WorkingDirectory read-only,
+# so without this the secret can't be saved and admin sessions would be
+# invalidated on every restart.
+Environment=SESSION_KEY_FILE=/var/lib/spawnpoint/session.key
+ExecStart=/opt/spawnpoint/bin/spawnpoint-api
+Restart=on-failure
+RestartSec=5
+User=spawnpoint
+Group=spawnpoint
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/spawnpoint
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+LimitNOFILE=65535
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=Spawnpoint nightly PostgreSQL backup
+After=postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=oneshot
+# Adjust paths to your install; setup.sh installs use the repo checkout.
+WorkingDirectory=/opt/spawnpoint
+EnvironmentFile=/etc/spawnpoint/spawnpoint.env
+Environment=BACKUP_DIR=/var/backups/spawnpoint
+Environment=RETENTION_DAYS=14
+ExecStart=/opt/spawnpoint/deployments/scripts/backup-postgres.sh

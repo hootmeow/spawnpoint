@@ -1,0 +1,40 @@
+# Local development only: runs the API with `go run` against a throwaway
+# Postgres, live-mounting the repo so code changes take effect on restart.
+# Migrations are NOT applied automatically here — run setup.sh or apply them
+# by hand. For a real deployment use docker-compose.prod.yml (built images,
+# a worker service, migrations applied automatically, real credentials via
+# .env).
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: spawnpoint
+      POSTGRES_USER: spawnpoint
+      # Dev-only throwaway password. It is safe ONLY because the port below is
+      # bound to loopback and never reachable off this host — never run this
+      # file on a shared or internet-facing machine.
+      POSTGRES_PASSWORD: spawnpoint
+    ports:
+      # Loopback-only so the well-known dev password can't be reached remotely.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  api:
+    image: golang:1.22
+    working_dir: /workspace
+    command: go run ./apps/api
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgres://spawnpoint:spawnpoint@postgres:5432/spawnpoint?sslmode=disable
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../..:/workspace
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
+

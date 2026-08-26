@@ -1,0 +1,8 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Shell scripts must always check out with LF: a CRLF shebang line (e.g. from
+# a Windows checkout with core.autocrlf=true) makes the kernel look for a
+# program literally named "bash\r" and the script fails before running a
+# single line.
+*.sh text eol=lf
