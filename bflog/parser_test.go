@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 )
 
 func TestParseBasicBattlefieldLog(t *testing.T) {

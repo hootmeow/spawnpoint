@@ -370,9 +370,9 @@ app is only reachable through it — see
 ```text
 apps/api/              HTTP API + server-rendered UI (theme, charts, pages)
 apps/worker/           log watcher / importer / reingester
-internal/parser/bflog/ Battlefield XML parser + vehicle-kill attribution
+bflog/                 Battlefield XML parser + vehicle-kill attribution (public: importable by other tools)
 internal/storage/      PostgreSQL ingestion, identity linking, analytics
-internal/domain/       normalized event types
+domain/                normalized event types (public)
 migrations/            schema (applied by setup.sh/update.sh, tracked in schema_migrations)
 fixtures/              parser fixtures
 deployments/           production + dev docker-compose stacks, systemd templates, backups

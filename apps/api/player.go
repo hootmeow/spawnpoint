@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 )
 
 type pairCountRow struct {

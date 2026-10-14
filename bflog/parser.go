@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 )
 
 const battlefieldNamespace = "http://www.dice.se/xmlns/bf/1.1"

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 	"github.com/hootmeow/spawnpoint/internal/storage/postgres"
 )
 

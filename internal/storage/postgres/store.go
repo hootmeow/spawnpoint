@@ -19,7 +19,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 )
 
 const (
