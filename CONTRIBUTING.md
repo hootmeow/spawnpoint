@@ -19,7 +19,7 @@ Thanks for helping improve Spawnpoint!
   only — see the rollback note in README "Updating"), plus a probe entry in
   `setup.sh`'s `probe_for` so pre-installer databases skip it correctly.
 - Parser changes should come with a test in
-  `internal/parser/bflog/parser_test.go`; real-world log fixtures are welcome
+  `bflog/parser_test.go`; real-world log fixtures are welcome
   (see `fixtures/README.md`, sanitize nicknames/chat first).
 
 ## Bugs and ideas

@@ -9,7 +9,7 @@ fixtures/
 ```
 
 Both directories are currently empty placeholders — the parser's unit tests
-(`internal/parser/bflog/parser_test.go`) use inline XML instead. If you have a
+(`bflog/parser_test.go`) use inline XML instead. If you have a
 real round log you're comfortable sharing (nicknames and chat lines are
 visible in it, so sanitize first), a fixture-based compatibility test is a
 welcome contribution:

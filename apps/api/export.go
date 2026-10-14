@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hootmeow/spawnpoint/internal/domain"
+	"github.com/hootmeow/spawnpoint/domain"
 )
 
 // playerExport lets a player download their own stats — the self-serve
