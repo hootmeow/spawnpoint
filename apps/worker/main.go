@@ -20,9 +20,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/hootmeow/spawnpoint/bflog"
 	"github.com/hootmeow/spawnpoint/internal/gamespy"
 	"github.com/hootmeow/spawnpoint/internal/notify"
-	"github.com/hootmeow/spawnpoint/bflog"
 	"github.com/hootmeow/spawnpoint/internal/storage/postgres"
 )
 

@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hootmeow/spawnpoint/internal/notify"
 	"github.com/hootmeow/spawnpoint/bflog"
+	"github.com/hootmeow/spawnpoint/internal/notify"
 	"github.com/hootmeow/spawnpoint/internal/storage/postgres"
 )
 
